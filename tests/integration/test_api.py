@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -7,6 +9,9 @@ from forecasts.models import Color
 
 class ForecastApiTests(TestCase):
     def setUp(self):
+        patcher = patch('api.views.get_horoscope_text', return_value='Тестовый гороскоп')
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.user = User.objects.create_user('anna', password='StrongPass123!', zodiac_sign='leo')
         Color.objects.create(name='Золотой', hex_code='#E0B04A', meaning='Блеск', mood='joy')
         self.url = reverse('api:forecast')
@@ -23,6 +28,7 @@ class ForecastApiTests(TestCase):
         response = self.client.post(self.url, {'mood': 'joy'}, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['color']['name'], 'Золотой')
+        self.assertEqual(response.json()['horoscope'], 'Тестовый гороскоп')
         self.assertEqual(self.client.get(self.url).status_code, 200)
 
     def test_unknown_mood(self):

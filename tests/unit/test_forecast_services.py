@@ -59,10 +59,17 @@ class HoroscopeTextTests(TestCase):
     def setUp(self):
         cache.clear()
 
+    @patch('forecasts.services.translate_to_russian', side_effect=lambda text: text)
     @patch('forecasts.services.requests.get')
-    def test_returns_text_from_api(self, mock_get):
+    def test_returns_text_from_api(self, mock_get, mock_translate):
         mock_get.return_value.json.return_value = {'horoscope': 'Good day'}
         self.assertEqual(get_horoscope_text('leo'), 'Good day')
+
+    @patch('forecasts.services.translate_to_russian', return_value='Хороший день')
+    @patch('forecasts.services.requests.get')
+    def test_text_is_translated(self, mock_get, mock_translate):
+        mock_get.return_value.json.return_value = {'horoscope': 'Good day'}
+        self.assertEqual(get_horoscope_text('leo'), 'Хороший день')
 
     @patch('forecasts.services.requests.get')
     def test_fallback_when_api_fails(self, mock_get):
