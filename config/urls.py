@@ -5,5 +5,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('forecast/', include('forecasts.urls')),
+    path('api/', include('api.urls')),
     path('', include('core.urls')),
 ]
