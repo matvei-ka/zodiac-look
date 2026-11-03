@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Look, Outfit, WardrobeItem
+
+admin.site.register(WardrobeItem)
+admin.site.register(Look)
+admin.site.register(Outfit)
