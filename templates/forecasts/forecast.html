@@ -1,0 +1,10 @@
+<h1>Прогноз дня</h1>
+{% for message in messages %}<p>{{ message }}</p>{% endfor %}
+<form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Получить прогноз</button></form>
+{% if entry %}
+<h2>Сегодня: {{ entry.get_mood_display }}</h2>
+<p>{{ horoscope_text }}</p>
+<p style="background: {{ entry.color.hex_code }}; padding: 10px;">
+  Цвет удачи: {{ entry.color.name }} — {{ entry.color.meaning }}
+</p>
+{% endif %}
