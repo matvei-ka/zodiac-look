@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+    <h2>Мой гардероб</h2>
+    <a href="#" class="btn btn-success">+ Добавить вещь</a>
+</div>
+
+<!-- Фильтры -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <select class="form-select">
+            <option>Все категории</option>
+            <option>Верх</option>
+            <option>Низ</option>
+            <option>Обувь</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <select class="form-select">
+            <option>Все сезоны</option>
+            <option>Лето</option>
+            <option>Зима</option>
+        </select>
+    </div>
+</div>
+
+<!-- Таблица вещей -->
+<table class="table table-hover bg-white shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Фото</th>
+            <th>Название</th>
+            <th>Категория</th>
+            <th>Сезон</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>[Картинка]</td>
+            <td>Красная футболка</td>
+            <td>Верх</td>
+            <td>Лето</td>
+            <td><button class="btn btn-sm btn-danger">Удалить</button></td>
+        </tr>
+        <tr>
+            <td>[Картинка]</td>
+            <td>Синие джинсы</td>
+            <td>Низ</td>
+            <td>Зима</td>
+            <td><button class="btn btn-sm btn-danger">Удалить</button></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
