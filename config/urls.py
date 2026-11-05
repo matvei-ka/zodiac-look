@@ -6,5 +6,6 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('forecast/', include('forecasts.urls')),
     path('api/', include('api.urls')),
+    path('wardrobe/', include('wardrobe.urls')),
     path('', include('core.urls')),
 ]
