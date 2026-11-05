@@ -1,3 +1,54 @@
-<h1>Регистрация</h1>
-<form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Зарегистрироваться</button></form>
-<a href="{% url 'accounts:login' %}">Войти</a>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center" style="margin-top: 10vh;">
+    <div class="col-md-5 mx-auto">
+        <div class="card shadow">
+            <div class="card-body text-center p-4">
+                <h3 class="mb-4" style="font-family: 'Playfair Display', serif; font-weight: bold; letter-spacing: 1px;">Регистрация</h3>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-4 col-form-label text-start">Логин:</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="username" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-4 col-form-label text-start">Пароль:</label>
+                        <div class="col-sm-8">
+                            <input type="password" name="password" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-4 align-items-center">
+                        <label class="col-sm-4 col-form-label text-start">Знак зодиака:</label>
+                        <div class="col-sm-8">
+                            <select class="form-select" name="zodiac">
+                                <option>Выберите знак</option>
+                                <option>Овен</option>
+                                <option>Телец</option>
+                                <option>Близнецы</option>
+                                <option>Рак</option>
+                                <option>Лев</option>
+                                <option>Дева</option>
+                                <option>Весы</option>
+                                <option>Скорпион</option>
+                                <option>Стрелец</option>
+                                <option>Козерог</option>
+                                <option>Водолей</option>
+                                <option>Рыбы</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-outline-dark px-4">Зарегистрироваться</button>
+                </form>
+                
+                <div class="mt-4">
+                    <a href="/login/" class="text-muted text-decoration-none">Уже есть аккаунт? Войти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
