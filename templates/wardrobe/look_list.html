@@ -1,32 +1,43 @@
 {% extends 'base.html' %}
 
+{% block title %}Образы — Астропрогноз{% endblock %}
+
 {% block content %}
 <div class="mt-4 border border-dark p-4 bg-white">
-    <h5 class="mb-4">Мои сохраненные образы</h5>
+    <h5 class="mb-4">Мои сохранённые образы</h5>
 
+    {% if rows %}
     <table class="table table-bordered text-center align-middle">
         <thead class="table-light">
             <tr>
                 <th>Название</th>
-                <th>Категория</th>
+                <th>Повод</th>
+                <th>Оценка</th>
                 <th>Вещи</th>
                 <th>Действие</th>
             </tr>
         </thead>
         <tbody>
+            {% for row in rows %}
             <tr>
-                <td>Для прогулки</td>
-                <td>24.10.2026</td>
-                <td>Джинсы, кеды...</td>
-                <td><button class="btn btn-sm btn-outline-dark">Удалить</button></td>
+                <td>{{ row.look.title }}</td>
+                <td>{{ row.occasion }}</td>
+                <td>{{ row.look.score }}%</td>
+                <td>{{ row.items }}</td>
+                <td>
+                    <form method="post" action="{% url 'wardrobe:look_delete' row.look.pk %}" onsubmit="return confirm('Удалить образ?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-dark">Удалить</button>
+                    </form>
+                </td>
             </tr>
-            <tr>
-                <td>В офис</td>
-                <td>15.10.2025</td>
-                <td>Рубашка, брюки...</td>
-                <td><button class="btn btn-sm btn-outline-dark">Удалить</button></td>
-            </tr>
+            {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <div class="alert alert-info mb-0">
+        Сохранённых образов пока нет. <a href="{% url 'wardrobe:stylist' %}">Подобрать образ</a>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

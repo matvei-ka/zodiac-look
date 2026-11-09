@@ -6,4 +6,5 @@ app_name = 'forecasts'
 
 urlpatterns = [
     path('', views.forecast, name='forecast'),
+    path('history/', views.history, name='history'),
 ]
