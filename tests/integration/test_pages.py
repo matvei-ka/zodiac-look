@@ -24,7 +24,7 @@ class PagesBase(TestCase):
     def make_item(self, name='Красная футболка'):
         return WardrobeItem.objects.create(
             user=self.user, name=name, category='верх',
-            color=self.color, season='лето', style='прогулка',
+            color=self.color, season='лето', style='walk',
         )
 
 
@@ -86,7 +86,7 @@ class WardrobePagesTests(PagesBase):
     def test_add_item(self):
         response = self.client.post(reverse('wardrobe:item_add'), {
             'name': 'Синие джинсы', 'category': 'низ', 'color': self.color.id,
-            'season': 'всесезонный', 'style': 'прогулка',
+            'season': 'всесезонный', 'style': 'walk',
         })
         self.assertRedirects(response, reverse('wardrobe:wardrobe_list'))
         self.assertTrue(WardrobeItem.objects.filter(user=self.user, name='Синие джинсы').exists())
@@ -95,7 +95,7 @@ class WardrobePagesTests(PagesBase):
         item = self.make_item()
         self.client.post(reverse('wardrobe:item_edit', args=[item.pk]), {
             'name': 'Белая футболка', 'category': 'верх', 'color': self.color.id,
-            'season': 'лето', 'style': 'прогулка',
+            'season': 'лето', 'style': 'walk',
         })
         item.refresh_from_db()
         self.assertEqual(item.name, 'Белая футболка')
@@ -109,7 +109,7 @@ class WardrobePagesTests(PagesBase):
         other = User.objects.create_user('boris', password='StrongPass123!', zodiac_sign='leo')
         item = WardrobeItem.objects.create(
             user=other, name='Чужая вещь', category='верх',
-            color=self.color, season='лето', style='прогулка',
+            color=self.color, season='лето', style='walk',
         )
         response = self.client.post(reverse('wardrobe:item_delete', args=[item.pk]))
         self.assertEqual(response.status_code, 404)
@@ -136,13 +136,13 @@ class StylistTests(PagesBase):
 
     def test_no_items_redirects_to_wardrobe(self):
         self.make_entry()
-        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'прогулка'})
+        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
         self.assertRedirects(response, reverse('wardrobe:wardrobe_list'), fetch_redirect_response=False)
 
     def test_pick_and_save_look(self):
         entry = self.make_entry()
         self.make_item()
-        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'прогулка'})
+        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Красная футболка')
         look = Look.objects.get(user=self.user)
@@ -165,7 +165,7 @@ class StylistTests(PagesBase):
     def test_delete_saved_look(self):
         self.make_entry()
         self.make_item()
-        self.client.post(reverse('wardrobe:stylist'), {'occasion': 'прогулка'})
+        self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
         look = Look.objects.get(user=self.user)
         self.client.post(reverse('wardrobe:look_save', args=[look.pk]))
         self.client.post(reverse('wardrobe:look_delete', args=[look.pk]))

@@ -5,32 +5,25 @@
 {% block content %}
 <div class="mt-4 border border-dark p-4 bg-white">
     <h4 class="mb-3">Умный стилист</h4>
-    
+
     <p class="mb-4">
-        Цвет удачи на сегодня: 
+        Цвет удачи на сегодня:
         <span class="px-3 py-1 border border-dark fw-bold" style="background: {{ entry.color.hex_code }};">{{ entry.color.name }}</span>
         <br>
         (настроение: {{ entry.get_mood_display }})
     </p>
 
-    <!-- ВОТ ЗДЕСЬ БЫЛ ПОТЕРЯН ТЕГ FORM -->
     <form method="post" class="d-flex align-items-center flex-wrap gap-2">
         {% csrf_token %}
-        
+
         <label class="fw-bold me-2" for="occasion">Выбери повод:</label>
         <select name="occasion" id="occasion" class="form-select w-auto me-2" required>
-            <option value="walk">Прогулка по городу</option>
-            <option value="home">Уютный вечер дома</option>
-            <option value="work">Деловая встреча</option>
-            <option value="shopping">Шопинг и обновки</option>
-            <option value="productive">День продуктивности</option>
-            <option value="party">Выход в свет</option>
-            <option value="spontaneous">Спонтанная прогулка</option>
-            <option value="important">Важное событие</option>
+            {% for value, label in occasions %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
         </select>
-        
+
         <button type="submit" class="btn btn-outline-dark">Подобрать образ</button>
     </form>
-
 </div>
 {% endblock %}
