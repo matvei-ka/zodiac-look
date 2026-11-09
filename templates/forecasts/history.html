@@ -49,7 +49,7 @@
             <td>{{ entry.entry_date|date:"d.m.Y" }}</td>
             <td>{{ entry.get_mood_display }}</td>
             <td>
-                <span class="px-3 py-1 border border-dark" style="background: {{ entry.color.hex_code }};">{{ entry.color.name }}</span>
+            <span class="d-inline-block text-nowrap px-3 py-1 border border-dark" style="background: {{ entry.color.hex_code }};">{{ entry.color.name }}</span>
             </td>
             <td>{% if entry.look %}{{ entry.look.title }}{% else %}—{% endif %}</td>
         </tr>

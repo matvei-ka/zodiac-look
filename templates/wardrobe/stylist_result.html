@@ -20,7 +20,7 @@
             <tr>
                 <td>{{ row.item.category|capfirst }}</td>
                 <td>
-                    <span class="px-2 py-1 border border-dark" style="background: {{ row.item.color.hex_code }};">{{ row.item.name }}</span>
+                <span class="d-inline-block px-2 py-1 border border-dark" style="background: {{ row.item.color.hex_code }};">{{ row.item.name }}</span>
                 </td>
                 <td>{% if row.reasons %}{{ row.reasons|join:", "|capfirst }}{% else %}Подходит по категории{% endif %}</td>
             </tr>
