@@ -1,10 +1,41 @@
-<h1>Прогноз дня</h1>
-{% for message in messages %}<p>{{ message }}</p>{% endfor %}
-<form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Получить прогноз</button></form>
+{% extends 'base.html' %}
+
+{% block title %}Сегодня — Астропрогноз{% endblock %}
+
+{% block content %}
+<div class="text-center mt-4">
+    <h4 class="mb-4">Какое у тебя настроение?</h4>
+
+    <form method="post" class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+        {% csrf_token %}
+        <select name="mood" class="form-select w-auto text-center" required>
+            <option value="" disabled {% if not entry %}selected{% endif %}>Выбери настроение</option>
+            {% for value, label in moods %}
+            <option value="{{ value }}" {% if entry and entry.mood == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-outline-dark px-4">Получить прогноз</button>
+    </form>
+</div>
+
 {% if entry %}
-<h2>Сегодня: {{ entry.get_mood_display }}</h2>
-<p>{{ horoscope_text }}</p>
-<p style="background: {{ entry.color.hex_code }}; padding: 10px;">
-  Цвет удачи: {{ entry.color.name }} — {{ entry.color.meaning }}
-</p>
+<div class="card mx-auto mt-4 shadow" style="max-width: 600px; background: linear-gradient(135deg, {{ entry.color.hex_code }}, #ffffff); border: 2px solid #333;">
+    <div class="card-body text-start p-4">
+        <h5 class="mb-3">Сегодня: {{ entry.get_mood_display }}</h5>
+
+        <div class="bg-white p-3 rounded mb-4 shadow-sm">
+            <p class="mb-1 fw-bold">Текст гороскопа:</p>
+            <p class="fst-italic mb-0">{{ horoscope_text }}</p>
+        </div>
+
+        <div class="d-flex align-items-center mb-2">
+            <span class="me-3">Цвет удачи:</span>
+            <span class="px-4 py-2 border border-dark text-dark fw-bold" style="background: {{ entry.color.hex_code }};">{{ entry.color.name }}</span>
+        </div>
+        <p class="text-muted mb-4">{{ entry.color.meaning }}</p>
+
+        <a href="{% url 'wardrobe:stylist' %}" class="btn btn-light border-dark fw-bold text-dark">Подобрать образ</a>
+    </div>
+</div>
 {% endif %}
+{% endblock %}

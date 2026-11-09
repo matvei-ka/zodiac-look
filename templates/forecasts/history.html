@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}История — Астропрогноз{% endblock %}
+
+{% block content %}
+<h2 class="mt-4 mb-3">История прогнозов</h2>
+
+{% if entries %}
+<div class="row mb-4">
+    <div class="col-md-4 mb-2">
+        <div class="card shadow-sm"><div class="card-body text-center">
+            <div class="text-muted">Всего прогнозов</div>
+            <div class="fs-3 fw-bold">{{ total }}</div>
+        </div></div>
+    </div>
+    <div class="col-md-4 mb-2">
+        <div class="card shadow-sm"><div class="card-body text-center">
+            <div class="text-muted">Частое настроение</div>
+            <div class="fs-3 fw-bold">{{ top_mood }}</div>
+        </div></div>
+    </div>
+    <div class="col-md-4 mb-2">
+        <div class="card shadow-sm"><div class="card-body text-center">
+            <div class="text-muted">Частый цвет удачи</div>
+            <div class="fs-3 fw-bold">{{ top_color }}</div>
+        </div></div>
+    </div>
+</div>
+
+<div class="mb-4 bg-white p-3 shadow-sm rounded">
+    <h6 class="mb-2">Настроения по числу дней</h6>
+    {% for label, count in mood_stats %}
+    <span class="badge text-bg-secondary me-1">{{ label }}: {{ count }}</span>
+    {% endfor %}
+</div>
+
+<table class="table table-hover bg-white shadow-sm align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Дата</th>
+            <th>Настроение</th>
+            <th>Цвет удачи</th>
+            <th>Образ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in entries %}
+        <tr>
+            <td>{{ entry.entry_date|date:"d.m.Y" }}</td>
+            <td>{{ entry.get_mood_display }}</td>
+            <td>
+                <span class="px-3 py-1 border border-dark" style="background: {{ entry.color.hex_code }};">{{ entry.color.name }}</span>
+            </td>
+            <td>{% if entry.look %}{{ entry.look.title }}{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="alert alert-info">
+    Пока нет ни одного прогноза. <a href="{% url 'forecasts:forecast' %}">Получить прогноз на сегодня</a>
+</div>
+{% endif %}
+{% endblock %}

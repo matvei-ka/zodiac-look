@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
 
+{% block title %}Стилист — Астропрогноз{% endblock %}
+
 {% block content %}
 <div class="mt-4 border border-dark p-4 bg-white">
-    <div class="d-flex align-items-center mb-4">
-        <label class="me-3 fw-bold">Выбери повод:</label>
-        <select class="form-select w-25 me-3">
-            <option>Прогулка</option>
+    <h4 class="mb-3">Умный стилист</h4>
+    <p class="mb-4">
+        Цвет удачи на сегодня:
+        <span class="px-3 py-1 border border-dark fw-bold" style="background: {{ entry.color.hex_code }};">{{ entry.color.name }}</span>
+        (настроение: {{ entry.get_mood_display }})
+    </p>
+
+    <form method="post" class="d-flex align-items-center flex-wrap gap-2">
+        {% csrf_token %}
+        <label class="fw-bold me-2" for="occasion">Выбери повод:</label>
+        <select name="occasion" id="occasion" class="form-select w-auto me-2" required>
+            {% for value, label in occasions %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
         </select>
-        <button class="btn btn-outline-dark">Подобрать образ</button>
-    </div>
-
-    <div class="mt-4 ms-2">
-        <p class="mb-2">Оценка соответствия: 85%</p>
-        <p class="mb-1">Верх: Белая рубашка (совпадает с цветом удачи)</p>
-        <p class="mb-1">Низ: Джинсы (подходит под повод)</p>
-        <p class="mb-1">Обувь: Кроссовки</p>
-        <p class="mb-1">Аксессуар: Сумка</p>
-    </div>
-
-    <div class="text-end mt-4">
-        <button class="btn btn-outline-dark">Сохранить</button>
-    </div>
+        <button type="submit" class="btn btn-outline-dark">Подобрать образ</button>
+    </form>
 </div>
 {% endblock %}

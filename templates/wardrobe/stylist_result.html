@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Подобранный образ — Астропрогноз{% endblock %}
+
+{% block content %}
+<div class="mt-4 border border-dark p-4 bg-white">
+    <h4 class="mb-1">{{ look.title }}</h4>
+    <p class="mb-3">Оценка соответствия: <b>{{ percentage }}%</b></p>
+
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Категория</th>
+                <th>Вещь</th>
+                <th>Почему подходит</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.item.category|capfirst }}</td>
+                <td>
+                    <span class="px-2 py-1 border border-dark" style="background: {{ row.item.color.hex_code }};">{{ row.item.name }}</span>
+                </td>
+                <td>{% if row.reasons %}{{ row.reasons|join:", "|capfirst }}{% else %}Подходит по категории{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex gap-2 justify-content-end mt-4">
+        <a href="{% url 'wardrobe:stylist' %}" class="btn btn-outline-dark">Подобрать другой</a>
+        <form method="post" action="{% url 'wardrobe:look_save' look.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Сохранить образ</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,56 +1,70 @@
 {% extends 'base.html' %}
 
+{% block title %}Гардероб — Астропрогноз{% endblock %}
+
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
     <h2>Мой гардероб</h2>
-    <a href="#" class="btn btn-success">+ Добавить вещь</a>
+    <a href="{% url 'wardrobe:item_add' %}" class="btn btn-success">+ Добавить вещь</a>
 </div>
 
-<!-- Фильтры -->
-<div class="row mb-3">
+<form method="get" class="row g-2 mb-3">
     <div class="col-md-4">
-        <select class="form-select">
-            <option>Все категории</option>
-            <option>Верх</option>
-            <option>Низ</option>
-            <option>Обувь</option>
+        <select name="category" class="form-select">
+            <option value="">Все категории</option>
+            {% for value, label in category_choices %}
+            <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
         </select>
     </div>
     <div class="col-md-4">
-        <select class="form-select">
-            <option>Все сезоны</option>
-            <option>Лето</option>
-            <option>Зима</option>
+        <select name="season" class="form-select">
+            <option value="">Все сезоны</option>
+            {% for value, label in season_choices %}
+            <option value="{{ value }}" {% if selected_season == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
         </select>
     </div>
-</div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-outline-dark">Применить</button>
+        <a href="{% url 'wardrobe:wardrobe_list' %}" class="btn btn-link">Сбросить</a>
+    </div>
+</form>
 
-<!-- Таблица вещей -->
-<table class="table table-hover bg-white shadow-sm">
+{% if items %}
+<table class="table table-hover bg-white shadow-sm align-middle">
     <thead class="table-dark">
         <tr>
-            <th>Фото</th>
             <th>Название</th>
             <th>Категория</th>
+            <th>Цвет</th>
             <th>Сезон</th>
+            <th>Стиль</th>
             <th>Действие</th>
         </tr>
     </thead>
     <tbody>
+        {% for item in items %}
         <tr>
-            <td>[Картинка]</td>
-            <td>Красная футболка</td>
-            <td>Верх</td>
-            <td>Лето</td>
-            <td><button class="btn btn-sm btn-danger">Удалить</button></td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.category|capfirst }}</td>
+            <td><span class="px-3 py-1 border border-dark" style="background: {{ item.color.hex_code }};">{{ item.color.name }}</span></td>
+            <td>{{ item.season|capfirst }}</td>
+            <td>{{ item.style|capfirst }}</td>
+            <td>
+                <a href="{% url 'wardrobe:item_edit' item.pk %}" class="btn btn-sm btn-outline-dark">Изменить</a>
+                <form method="post" action="{% url 'wardrobe:item_delete' item.pk %}" class="d-inline" onsubmit="return confirm('Удалить вещь?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
         </tr>
-        <tr>
-            <td>[Картинка]</td>
-            <td>Синие джинсы</td>
-            <td>Низ</td>
-            <td>Зима</td>
-            <td><button class="btn btn-sm btn-danger">Удалить</button></td>
-        </tr>
+        {% endfor %}
     </tbody>
 </table>
+{% else %}
+<div class="alert alert-info">
+    Вещей пока нет. <a href="{% url 'wardrobe:item_add' %}">Добавь первую вещь</a>, чтобы стилист мог подбирать образы.
+</div>
+{% endif %}
 {% endblock %}
