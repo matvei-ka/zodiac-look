@@ -36,4 +36,18 @@
         </form>
     </div>
 </div>
+
+{% if ideals %}
+<h5 class="mt-5 mb-3">Идеальные образы для вдохновения</h5>
+<div class="row">
+    {% for ideal in ideals %}
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card h-100 shadow-sm border-0" style="border-radius: 18px; overflow: hidden;">
+            <img src="{{ ideal.image_url }}" alt="{{ ideal.title }}" class="card-img-top" loading="lazy" referrerpolicy="no-referrer" style="height: 260px; object-fit: cover;">
+            <div class="card-body"><h6 class="mb-0">{{ ideal.title }}</h6></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

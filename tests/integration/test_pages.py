@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -6,7 +7,7 @@ from django.utils import timezone
 
 from accounts.models import User
 from forecasts.models import Color, MoodEntry
-from wardrobe.models import Look, WardrobeItem
+from wardrobe.models import IdealLook, Look, WardrobeItem
 
 
 class PagesBase(TestCase):
@@ -31,7 +32,7 @@ class PagesBase(TestCase):
 class AccessTests(PagesBase):
     def test_pages_require_login(self):
         names = [
-            'forecasts:forecast', 'forecasts:history', 'wardrobe:wardrobe_list',
+            'forecasts:forecast', 'forecasts:audit', 'wardrobe:wardrobe_list',
             'wardrobe:item_add', 'wardrobe:stylist', 'wardrobe:look_list',
         ]
         for name in names:
@@ -67,11 +68,29 @@ class ForecastPageTests(PagesBase):
         self.client.post(reverse('forecasts:forecast'), {'mood': 'abc'})
         self.assertFalse(MoodEntry.objects.exists())
 
-    def test_history_page(self):
+    def test_audit_page(self):
         self.make_entry()
-        response = self.client.get(reverse('forecasts:history'))
+        response = self.client.get(reverse('forecasts:audit'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Золотой')
+        self.assertNotContains(response, 'linear-gradient(90deg, #E0B04A')
+
+    def test_audit_empty(self):
+        self.assertEqual(self.client.get(reverse('forecasts:audit')).status_code, 200)
+
+    def test_audit_tie_makes_gradient(self):
+        second = Color.objects.create(
+            name='Мятный', hex_code='#A8E6CF', meaning='Покой', mood='calm'
+        )
+        today = timezone.localdate()
+        MoodEntry.objects.create(user=self.user, entry_date=today, mood='joy', color=self.color)
+        MoodEntry.objects.create(
+            user=self.user, entry_date=today - timedelta(days=1),
+            mood='calm', color=second,
+        )
+        response = self.client.get(reverse('forecasts:audit'))
+        self.assertContains(response, 'Твоя палитра')
+        self.assertContains(response, 'linear-gradient(90deg, #E0B04A, #A8E6CF)')
 
 
 class WardrobePagesTests(PagesBase):
@@ -170,3 +189,29 @@ class StylistTests(PagesBase):
         self.client.post(reverse('wardrobe:look_save', args=[look.pk]))
         self.client.post(reverse('wardrobe:look_delete', args=[look.pk]))
         self.assertFalse(Look.objects.filter(pk=look.pk).exists())
+
+
+class IdealLooksTests(PagesBase):
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.user)
+        IdealLook.objects.create(
+            occasion='walk', title='Городской образ',
+            image_url='https://example.com/look.jpg',
+        )
+
+    def test_ideal_in_stylist_result(self):
+        self.make_entry()
+        self.make_item()
+        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
+        self.assertContains(response, 'Городской образ')
+
+    def test_ideal_only_for_chosen_occasion(self):
+        IdealLook.objects.create(
+            occasion='work', title='Деловой образ', image_url='https://example.com/work.jpg',
+        )
+        self.make_entry()
+        self.make_item()
+        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
+        self.assertContains(response, 'Городской образ')
+        self.assertNotContains(response, 'Деловой образ')
