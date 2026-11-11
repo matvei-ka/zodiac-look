@@ -7,8 +7,11 @@ from django.shortcuts import redirect, render
 from core.constants import MOOD_CHOICES
 
 from .forms import MoodForm
+from wardrobe.models import WardrobeItem
+
 from .models import MoodEntry
 from .services import get_horoscope_text, get_today_entry, save_forecast
+from .stats import build_gradient, top_tied
 
 
 @login_required
@@ -35,19 +38,54 @@ def forecast(request):
 
 
 @login_required
-def history(request):
-    """История прогнозов и простая статистика."""
+def audit(request):
+    """Аудит настроения и гардероба: лидеры, палитра дней, пробелы в гардеробе."""
     entries = list(
-        MoodEntry.objects.filter(user=request.user).select_related('color', 'look')
+        MoodEntry.objects.filter(user=request.user)
+        .select_related('color', 'look')
+        .order_by('entry_date')
     )
     labels = dict(MOOD_CHOICES)
-    moods = Counter(entry.mood for entry in entries)
-    colors = Counter(entry.color.name for entry in entries)
+    total = len(entries)
+
+    mood_counter = Counter(entry.mood for entry in entries)
+    top_mood_codes, _ = top_tied(mood_counter)
+    top_moods = [labels.get(code, code) for code in top_mood_codes]
+
+    colors_by_id = {entry.color_id: entry.color for entry in entries}
+    color_counter = Counter(entry.color_id for entry in entries)
+    top_color_ids, top_color_count = top_tied(color_counter)
+    top_colors = [colors_by_id[color_id] for color_id in top_color_ids]
+    gradient = build_gradient([color.hex_code for color in top_colors])
+
+    mood_bars = [
+        {
+            'label': labels.get(code, code),
+            'count': count,
+            'percent': round(count * 100 / total) if total else 0,
+        }
+        for code, count in mood_counter.most_common()
+    ]
+
+    wardrobe = WardrobeItem.objects.filter(user=request.user)
+    color_coverage = [
+        {'color': color, 'count': wardrobe.filter(color=color).count()}
+        for color in top_colors
+    ]
+    unused_items = list(wardrobe.filter(looks__isnull=True).select_related('color')[:6])
+
     context = {
-        'entries': entries,
-        'total': len(entries),
-        'top_mood': labels.get(moods.most_common(1)[0][0]) if moods else None,
-        'top_color': colors.most_common(1)[0][0] if colors else None,
-        'mood_stats': [(labels.get(code, code), count) for code, count in moods.most_common()],
+        'total': total,
+        'top_moods': top_moods,
+        'top_colors': top_colors,
+        'top_color_count': top_color_count,
+        'is_tie': len(top_colors) > 1,
+        'gradient': gradient,
+        'mood_bars': mood_bars,
+        'ribbon': entries[-30:],
+        'recent': list(reversed(entries[-8:])),
+        'color_coverage': color_coverage,
+        'wardrobe_total': wardrobe.count(),
+        'unused_items': unused_items,
     }
-    return render(request, 'forecasts/history.html', context)
+    return render(request, 'forecasts/audit.html', context)

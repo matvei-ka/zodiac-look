@@ -82,3 +82,21 @@ class Outfit(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class IdealLook(models.Model):
+    """Пример идеального образа для повода (картинка по ссылке из интернета)."""
+
+    occasion = models.CharField('Повод', max_length=30)
+    title = models.CharField('Название', max_length=100)
+    image_url = models.URLField('Ссылка на картинку', max_length=500)
+    description = models.CharField('Описание', max_length=255, blank=True)
+
+    class Meta:
+        db_table = 'ideal_looks'
+        ordering = ['occasion', 'id']
+        verbose_name = 'Идеальный образ'
+        verbose_name_plural = 'Идеальные образы'
+
+    def __str__(self):
+        return self.title

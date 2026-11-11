@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from forecasts.services import get_today_entry
 
 from .forms import CATEGORY_CHOICES, OCCASION_CHOICES, SEASON_CHOICES, ItemForm
-from .models import Look, LookItem, WardrobeItem
+from .models import IdealLook, Look, LookItem, WardrobeItem
 from .services import pick_outfit
 
 OCCASIONS = dict(OCCASION_CHOICES)
@@ -104,6 +104,7 @@ def stylist(request):
             'percentage': percentage,
             'occasion': OCCASIONS[occasion],
             'entry': entry,
+            'ideals': IdealLook.objects.filter(occasion=occasion)[:4],
         })
 
     return render(request, 'wardrobe/stylist.html', {'entry': entry, 'occasions': OCCASION_CHOICES})

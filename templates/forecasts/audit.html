@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Аудит — Астропрогноз{% endblock %}
+
+{% block extra_head %}
+<style>
+    .audit-hero { border-radius: 24px; padding: 28px; border: 2px solid #222; color: #222; }
+    .audit-card { background: rgba(255, 255, 255, .88); border-radius: 20px; padding: 20px; box-shadow: 0 6px 20px rgba(106, 4, 106, .08); height: 100%; }
+    .audit-num { font-family: 'Playfair Display', serif; font-size: 2rem; line-height: 1.1; }
+    .bar-track { background: #f1e6f1; border-radius: 999px; height: 12px; overflow: hidden; }
+    .bar-fill { background: linear-gradient(90deg, #6a046a, #d46ad4); height: 100%; border-radius: 999px; }
+    .ribbon { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ribbon-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #bbb; }
+    .timeline { border-left: 3px solid #d9b3d9; margin-left: 10px; padding-left: 22px; }
+    .timeline-item { position: relative; margin-bottom: 18px; }
+    .timeline-item::before { content: ''; position: absolute; left: -33px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--dot, #6a046a); border: 3px solid #fff; box-shadow: 0 0 0 1px #aaa; }
+    .chip { display: inline-block; padding: 4px 14px; border-radius: 999px; border: 1px solid #333; white-space: nowrap; margin: 0 6px 6px 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mt-4 mb-4">Аудит настроения и гардероба</h2>
+
+{% if total %}
+<div class="audit-hero mb-4 shadow" style="background: {{ gradient }};">
+    {% if is_tie %}
+    <div class="text-uppercase small fw-bold mb-2">Чаще всего выпадали (по {{ top_color_count }} раз каждый)</div>
+    <div class="audit-num mb-3">Твоя палитра</div>
+    {% else %}
+    <div class="text-uppercase small fw-bold mb-2">Главный цвет удачи ({{ top_color_count }} раз)</div>
+    <div class="audit-num mb-3">{{ top_colors.0.name }}</div>
+    {% endif %}
+    <div>
+        {% for color in top_colors %}
+        <span class="chip" style="background: {{ color.hex_code }};">{{ color.name }}</span>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="audit-card text-center">
+            <div class="text-muted">Всего прогнозов</div>
+            <div class="audit-num">{{ total }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="audit-card text-center">
+            <div class="text-muted">Частое настроение</div>
+            <div class="audit-num">{% for mood in top_moods %}{{ mood }}{% if not forloop.last %} · {% endif %}{% endfor %}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="audit-card text-center">
+            <div class="text-muted">Вещей в гардеробе</div>
+            <div class="audit-num">{{ wardrobe_total }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-6">
+        <div class="audit-card">
+            <h5 class="mb-3">Настроения</h5>
+            {% for bar in mood_bars %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>{{ bar.label }}</span>
+                    <span>{{ bar.count }} ({{ bar.percent }}%)</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width: {{ bar.percent }}%;"></div></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="audit-card">
+            <h5 class="mb-3">Палитра дней</h5>
+            <div class="ribbon">
+                {% for entry in ribbon %}
+                <span class="ribbon-dot" style="background: {{ entry.color.hex_code }};" title="{{ entry.entry_date|date:'d.m' }} — {{ entry.color.name }}"></span>
+                {% endfor %}
+            </div>
+            <p class="text-muted small mt-3 mb-0">Каждый кружок — цвет удачи одного дня (последние 30 дней).</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-6">
+        <div class="audit-card">
+            <h5 class="mb-3">Последние дни</h5>
+            <div class="timeline">
+                {% for entry in recent %}
+                <div class="timeline-item" style="--dot: {{ entry.color.hex_code }};">
+                    <div class="fw-bold">{{ entry.entry_date|date:"d.m.Y" }} · {{ entry.get_mood_display }}</div>
+                    <div class="small text-muted">
+                        Цвет удачи: {{ entry.color.name }}{% if entry.look %} · образ «{{ entry.look.title }}»{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="audit-card">
+            <h5 class="mb-3">Аудит гардероба</h5>
+            {% if wardrobe_total == 0 %}
+            <p class="mb-0">Гардероб пуст. <a href="{% url 'wardrobe:item_add' %}">Добавь первую вещь</a>.</p>
+            {% else %}
+            {% for row in color_coverage %}
+            <p class="mb-2">
+                <span class="chip" style="background: {{ row.color.hex_code }};">{{ row.color.name }}</span>
+                {% if row.count %}
+                вещей этого цвета: <b>{{ row.count }}</b>
+                {% else %}
+                вещей этого цвета нет, а он у тебя в лидерах. Стоит добавить.
+                {% endif %}
+            </p>
+            {% endfor %}
+            <h6 class="mt-4 mb-2">Вещи, которых ещё не было в образах</h6>
+            {% if unused_items %}
+            {% for item in unused_items %}
+            <span class="chip" style="background: {{ item.color.hex_code }};">{{ item.name }}</span>
+            {% endfor %}
+            {% else %}
+            <p class="mb-0 text-muted">Все вещи уже участвовали в образах.</p>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="audit-card">
+    Данных для аудита пока нет. <a href="{% url 'forecasts:forecast' %}">Получи прогноз на сегодня</a>.
+</div>
+{% endif %}
+{% endblock %}
