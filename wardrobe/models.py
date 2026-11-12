@@ -88,6 +88,8 @@ class IdealLook(models.Model):
     """Пример идеального образа для повода (картинка по ссылке из интернета)."""
 
     occasion = models.CharField('Повод', max_length=30)
+    mood = models.CharField('Настроение', max_length=20, blank=True)
+    season = models.CharField('Сезон', max_length=20, blank=True)
     title = models.CharField('Название', max_length=100)
     image_url = models.URLField('Ссылка на картинку', max_length=500)
     description = models.CharField('Описание', max_length=255, blank=True)
