@@ -134,6 +134,12 @@ class WardrobePagesTests(PagesBase):
         self.assertEqual(response.status_code, 404)
         self.assertTrue(WardrobeItem.objects.filter(pk=item.pk).exists())
 
+    def test_style_is_shown_in_russian(self):
+        self.make_item()
+        response = self.client.get(reverse('wardrobe:wardrobe_list'))
+        self.assertContains(response, 'Прогулка по городу')
+        self.assertNotContains(response, '>Walk<')
+
     def test_filter_by_category(self):
         self.make_item('Красная футболка')
         response = self.client.get(reverse('wardrobe:wardrobe_list'), {'category': 'низ'})
@@ -215,3 +221,14 @@ class IdealLooksTests(PagesBase):
         response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
         self.assertContains(response, 'Городской образ')
         self.assertNotContains(response, 'Деловой образ')
+
+    def test_ideal_adapts_to_mood(self):
+        IdealLook.objects.create(
+            occasion='walk', title='Грустный образ', mood='sadness',
+            image_url='https://example.com/sad.jpg',
+        )
+        self.make_entry()
+        self.make_item()
+        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
+        self.assertContains(response, 'Городской образ')
+        self.assertNotContains(response, 'Грустный образ')
