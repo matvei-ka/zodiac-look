@@ -28,8 +28,8 @@ class WardrobeServiceTests(TestCase):
 
     def test_calculate_item_score(self):
         score, reasons = calculate_item_score(self.item, self.color.id, 'радость', 'walk')
-        # 40 (цвет) + 30 (повод) + 15 (настроение) + 15 (сезон) = 100
-        self.assertEqual(score, 100)
+        # 40 (цвет) + 30 (повод) + 15 (настроение) = 85
+        self.assertEqual(score, 85)
         self.assertIn('совпадает с цветом удачи', reasons)
 
     def test_pick_outfit(self):

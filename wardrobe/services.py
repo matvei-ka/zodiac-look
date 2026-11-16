@@ -14,9 +14,6 @@ def calculate_item_score(item, lucky_color_id, mood, occasion):
     if item.color and item.color.mood == mood:
         score += 15
         reasons.append("соответствует настроению")
-    if item.season in ['всесезонный', 'лето']:
-        score += 15
-        reasons.append("подходит по сезону")
     return score, reasons
 
 def pick_outfit(user, occasion, mood_entry):
@@ -43,7 +40,7 @@ def pick_outfit(user, occasion, mood_entry):
                 break
 
     total_score = sum([entry['score'] for entry in selected])
-    max_possible = len(categories) * 100 
+    max_possible = len(categories) * 85
     percentage = int((total_score / max_possible) * 100) if max_possible > 0 else 0
 
     explanation = []

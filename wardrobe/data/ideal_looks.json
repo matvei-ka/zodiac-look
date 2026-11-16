@@ -1,0 +1,114 @@
+[
+  {
+    "occasion": "home",
+    "title": "2017 core",
+    "image": "ideal_looks/загруженное_1.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "home",
+    "title": "Grey",
+    "image": "ideal_looks/загруженное_2.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "important",
+    "title": "Cute",
+    "image": "ideal_looks/0535be302607b6118d49f628ea2cfc50.jpg",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "important",
+    "title": "Cats",
+    "image": "ideal_looks/загруженное_12.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "party",
+    "title": "Hang out",
+    "image": "ideal_looks/загруженное_8.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "party",
+    "title": "Shark",
+    "image": "ideal_looks/загруженное_9.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "productive",
+    "title": "Red",
+    "image": "ideal_looks/загруженное_5.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "productive",
+    "title": "Not casual",
+    "image": "ideal_looks/b166185c7934a29ea349fb6dfbe5e704.jpg",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "shopping",
+    "title": "Nesquik",
+    "image": "ideal_looks/загруженное_3.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "shopping",
+    "title": "Blue sea",
+    "image": "ideal_looks/загруженное_4.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "spontaneous",
+    "title": "Casual",
+    "image": "ideal_looks/загруженное_10.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "spontaneous",
+    "title": "Pink boy",
+    "image": "ideal_looks/загруженное_11.png",
+    "image_url": "",
+    "description": ""
+  },
+  {
+    "occasion": "walk",
+    "title": "Strawberry",
+    "image": "",
+    "image_url": "https://i.pinimg.com/originals/46/16/33/461633111401190f62e36a32f76691f3.jpg?nii=t",
+    "description": ""
+  },
+  {
+    "occasion": "walk",
+    "title": "Frutiger aero",
+    "image": "",
+    "image_url": "https://i.pinimg.com/736x/c9/7f/8a/c97f8a686b92137df05d441a02fc81b1.jpg",
+    "description": ""
+  },
+  {
+    "occasion": "work",
+    "title": "Office siren",
+    "image": "",
+    "image_url": "https://i.pinimg.com/736x/4c/c7/9d/4cc79dd9fa728fd5e6a3e43f0ae01885.jpg",
+    "description": ""
+  },
+  {
+    "occasion": "work",
+    "title": "Official style",
+    "image": "",
+    "image_url": "https://i.pinimg.com/736x/60/aa/cc/60aacc3b01aec97a987c9c95dd74f86d.jpg",
+    "description": ""
+  }
+]
