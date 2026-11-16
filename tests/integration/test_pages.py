@@ -221,14 +221,3 @@ class IdealLooksTests(PagesBase):
         response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
         self.assertContains(response, 'Городской образ')
         self.assertNotContains(response, 'Деловой образ')
-
-    def test_ideal_adapts_to_mood(self):
-        IdealLook.objects.create(
-            occasion='walk', title='Грустный образ', mood='sadness',
-            image_url='https://example.com/sad.jpg',
-        )
-        self.make_entry()
-        self.make_item()
-        response = self.client.post(reverse('wardrobe:stylist'), {'occasion': 'walk'})
-        self.assertContains(response, 'Городской образ')
-        self.assertNotContains(response, 'Грустный образ')

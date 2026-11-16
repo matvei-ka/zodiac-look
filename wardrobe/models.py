@@ -85,13 +85,12 @@ class Outfit(models.Model):
 
 
 class IdealLook(models.Model):
-    """Пример идеального образа для повода (картинка по ссылке из интернета)."""
+    """Пример идеального образа для повода: файл с компьютера или ссылка на картинку."""
 
     occasion = models.CharField('Повод', max_length=30)
-    mood = models.CharField('Настроение', max_length=20, blank=True)
-    season = models.CharField('Сезон', max_length=20, blank=True)
     title = models.CharField('Название', max_length=100)
-    image_url = models.URLField('Ссылка на картинку', max_length=500)
+    image = models.FileField('Файл картинки', upload_to='ideal_looks/', blank=True)
+    image_url = models.URLField('Или ссылка на картинку', max_length=500, blank=True)
     description = models.CharField('Описание', max_length=255, blank=True)
 
     class Meta:
@@ -99,6 +98,11 @@ class IdealLook(models.Model):
         ordering = ['occasion', 'id']
         verbose_name = 'Идеальный образ'
         verbose_name_plural = 'Идеальные образы'
+
+    @property
+    def src(self):
+        """Адрес картинки: загруженный файл, иначе ссылка."""
+        return self.image.url if self.image else self.image_url
 
     def __str__(self):
         return self.title
