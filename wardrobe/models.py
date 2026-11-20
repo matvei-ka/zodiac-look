@@ -11,6 +11,7 @@ class WardrobeItem(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wardrobe_items'
     )
     name = models.CharField('Название', max_length=100)
+    image = models.ImageField('Картинка', upload_to='wardrobe/', blank=True, null=True)
     category = models.CharField('Категория', max_length=20)
     color = models.ForeignKey('forecasts.Color', on_delete=models.PROTECT)
     season = models.CharField('Сезон', max_length=20)

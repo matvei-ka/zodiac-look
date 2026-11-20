@@ -30,7 +30,7 @@ class ItemForm(forms.ModelForm):
 
     class Meta:
         model = WardrobeItem
-        fields = ('name', 'category', 'color', 'season', 'style')
+        fields = ('name', 'image', 'category', 'color', 'season', 'style')
         labels = {'name': 'Название', 'color': 'Цвет'}
 
     def __init__(self, *args, **kwargs):
