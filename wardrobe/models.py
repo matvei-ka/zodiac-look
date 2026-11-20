@@ -6,11 +6,12 @@ from core.constants import MOOD_CHOICES
 
 class WardrobeItem(models.Model):
     """Вещь из гардероба пользователя."""
-
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wardrobe_items'
     )
     name = models.CharField('Название', max_length=100)
+    # ДОБАВЛЕНО ПОЛЕ ДЛЯ КАРТИНКИ:
+    image = models.ImageField('Картинка', upload_to='wardrobe/', blank=True, null=True)
     category = models.CharField('Категория', max_length=20)
     color = models.ForeignKey('forecasts.Color', on_delete=models.PROTECT)
     season = models.CharField('Сезон', max_length=20)
@@ -27,7 +28,6 @@ class WardrobeItem(models.Model):
 
 class Look(models.Model):
     """Образ, собранный из вещей пользователя."""
-
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='looks'
     )
@@ -56,7 +56,6 @@ class Look(models.Model):
 
 class LookItem(models.Model):
     """Связь образа и вещи (таблица look_items)."""
-
     look = models.ForeignKey(Look, on_delete=models.CASCADE)
     item = models.ForeignKey(WardrobeItem, on_delete=models.CASCADE)
 
@@ -69,7 +68,6 @@ class LookItem(models.Model):
 
 class Outfit(models.Model):
     """Готовый образ-шаблон для подбора по настроению."""
-
     title = models.CharField('Название', max_length=100)
     items = models.TextField('Состав')
     mood = models.CharField('Настроение', max_length=20, choices=MOOD_CHOICES)
@@ -84,25 +82,10 @@ class Outfit(models.Model):
         return self.title
 
 
-class IdealLook(models.Model):
-    """Пример идеального образа для повода: файл с компьютера или ссылка на картинку."""
-
-    occasion = models.CharField('Повод', max_length=30)
-    title = models.CharField('Название', max_length=100)
-    image = models.FileField('Файл картинки', upload_to='ideal_looks/', blank=True)
-    image_url = models.URLField('Или ссылка на картинку', max_length=500, blank=True)
-    description = models.CharField('Описание', max_length=255, blank=True)
-
-    class Meta:
-        db_table = 'ideal_looks'
-        ordering = ['occasion', 'id']
-        verbose_name = 'Идеальный образ'
-        verbose_name_plural = 'Идеальные образы'
-
-    @property
-    def src(self):
-        """Адрес картинки: загруженный файл, иначе ссылка."""
-        return self.image.url if self.image else self.image_url
+class UserOccasion(models.Model):
+    """Пользовательские поводы (добавленные самим пользователем)."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField('Название повода', max_length=50)
 
     def __str__(self):
-        return self.title
+        return self.name

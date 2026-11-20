@@ -32,36 +32,42 @@
 </form>
 
 {% if items %}
-<table class="table table-hover bg-white shadow-sm align-middle">
-    <thead class="table-dark">
-        <tr>
-            <th>Название</th>
-            <th>Категория</th>
-            <th>Цвет</th>
-            <th>Сезон</th>
-            <th>Стиль</th>
-            <th>Действие</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in items %}
-        <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.category|capfirst }}</td>
-            <td><span class="d-inline-block text-nowrap px-3 py-1 border border-dark" style="background: {{ item.color.hex_code }};">{{ item.color.name }}</span></td>
-            <td>{{ item.season|capfirst }}</td>
-            <td>{{ item.style_label }}</td>
-            <td>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for item in items %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}" style="height: 250px; object-fit: cover;">
+            {% else %}
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 250px;">
+                    Нет фото
+                </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ item.name }}</h5>
+                <p class="card-text mb-1"><strong>Категория:</strong> {{ item.get_category_display }}</p>
+                <p class="card-text mb-1">
+                    <strong>Цвет:</strong> 
+                    <span class="badge border border-dark" style="background-color: {{ item.color.hex_code }}; color: black;">
+                        {{ item.color.name }}
+                    </span>
+                </p>
+                <p class="card-text mb-1"><strong>Сезон:</strong> {{ item.get_season_display }}</p>
+                <p class="card-text"><strong>Стиль:</strong> {{ item.get_style_display }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
                 <a href="{% url 'wardrobe:item_edit' item.pk %}" class="btn btn-sm btn-outline-dark">Изменить</a>
-                <form method="post" action="{% url 'wardrobe:item_delete' item.pk %}" class="d-inline" onsubmit="return confirm('Удалить вещь?');">
+                
+                <!-- Кнопка удаления с подтверждением -->
+                <form method="post" action="{% url 'wardrobe:item_delete' item.pk %}" class="d-inline" onsubmit="return confirm('Вы действительно хотите удалить эту вещь?');">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
                 </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% else %}
 <div class="alert alert-info">
     Вещей пока нет. <a href="{% url 'wardrobe:item_add' %}">Добавь первую вещь</a>, чтобы стилист мог подбирать образы.
