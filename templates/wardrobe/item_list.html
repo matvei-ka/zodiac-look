@@ -45,20 +45,21 @@
             {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ item.name }}</h5>
-                <p class="card-text mb-1"><strong>Категория:</strong> {{ item.get_category_display }}</p>
+              
+                <p class="card-text mb-1"><strong>Категория:</strong> {{ item.category }}</p>
                 <p class="card-text mb-1">
                     <strong>Цвет:</strong> 
                     <span class="badge border border-dark" style="background-color: {{ item.color.hex_code }}; color: black;">
                         {{ item.color.name }}
                     </span>
                 </p>
-                <p class="card-text mb-1"><strong>Сезон:</strong> {{ item.get_season_display }}</p>
-                <p class="card-text"><strong>Стиль:</strong> {{ item.get_style_display }}</p>
+                <p class="card-text mb-1"><strong>Сезон:</strong> {{ item.season }}</p>
+                <p class="card-text"><strong>Стиль:</strong> {{ item.style }}</p>
             </div>
             <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
                 <a href="{% url 'wardrobe:item_edit' item.pk %}" class="btn btn-sm btn-outline-dark">Изменить</a>
                 
-                <!-- Кнопка удаления с подтверждением -->
+                
                 <form method="post" action="{% url 'wardrobe:item_delete' item.pk %}" class="d-inline" onsubmit="return confirm('Вы действительно хотите удалить эту вещь?');">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-danger">Удалить</button>

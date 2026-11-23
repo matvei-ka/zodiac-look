@@ -1,5 +1,4 @@
 from django.urls import path
-
 from . import views
 
 app_name = 'wardrobe'
@@ -13,4 +12,5 @@ urlpatterns = [
     path('looks/', views.look_list, name='look_list'),
     path('looks/<int:pk>/save/', views.look_save, name='look_save'),
     path('looks/<int:pk>/delete/', views.look_delete, name='look_delete'),
+    path('add-occasion/', views.add_occasion, name='add_occasion'),
 ]
