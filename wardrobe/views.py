@@ -38,7 +38,7 @@ def wardrobe_list(request):
 
 @login_required
 def item_add(request):
-    form = ItemForm(request.POST or None)
+    form = ItemForm(request.POST or None, request.FILES or None)
     if request.method == 'POST' and form.is_valid():
         item = form.save(commit=False)
         item.user = request.user
@@ -51,7 +51,7 @@ def item_add(request):
 @login_required
 def item_edit(request, pk):
     item = get_object_or_404(WardrobeItem, pk=pk, user=request.user)
-    form = ItemForm(request.POST or None, instance=item)
+    form = ItemForm(request.POST or None, request.FILES or None, instance=item)
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, 'Изменения сохранены.')

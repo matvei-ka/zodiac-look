@@ -1,13 +1,26 @@
+import base64
+import tempfile
 from datetime import timedelta
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import User
 from forecasts.models import Color, MoodEntry
 from wardrobe.models import IdealLook, Look, WardrobeItem
+
+
+PNG_BYTES = base64.b64decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+)
+MEDIA_TMP = tempfile.mkdtemp()
+
+
+def make_image(name='item.png'):
+    return SimpleUploadedFile(name, PNG_BYTES, content_type='image/png')
 
 
 class PagesBase(TestCase):
@@ -93,6 +106,7 @@ class ForecastPageTests(PagesBase):
         self.assertContains(response, 'linear-gradient(90deg, #E0B04A, #A8E6CF)')
 
 
+@override_settings(MEDIA_ROOT=MEDIA_TMP)
 class WardrobePagesTests(PagesBase):
     def setUp(self):
         super().setUp()
@@ -105,16 +119,24 @@ class WardrobePagesTests(PagesBase):
     def test_add_item(self):
         response = self.client.post(reverse('wardrobe:item_add'), {
             'name': 'Синие джинсы', 'category': 'низ', 'color': self.color.id,
-            'season': 'всесезонный', 'style': 'walk',
+            'season': 'всесезонный', 'style': 'walk', 'image': make_image(),
         })
         self.assertRedirects(response, reverse('wardrobe:wardrobe_list'))
         self.assertTrue(WardrobeItem.objects.filter(user=self.user, name='Синие джинсы').exists())
+
+    def test_add_item_requires_image(self):
+        response = self.client.post(reverse('wardrobe:item_add'), {
+            'name': 'Синие джинсы', 'category': 'низ', 'color': self.color.id,
+            'season': 'всесезонный', 'style': 'walk',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(WardrobeItem.objects.filter(name='Синие джинсы').exists())
 
     def test_edit_item(self):
         item = self.make_item()
         self.client.post(reverse('wardrobe:item_edit', args=[item.pk]), {
             'name': 'Белая футболка', 'category': 'верх', 'color': self.color.id,
-            'season': 'лето', 'style': 'walk',
+            'season': 'лето', 'style': 'walk', 'image': make_image('new.png'),
         })
         item.refresh_from_db()
         self.assertEqual(item.name, 'Белая футболка')
@@ -138,6 +160,8 @@ class WardrobePagesTests(PagesBase):
         self.make_item()
         response = self.client.get(reverse('wardrobe:wardrobe_list'))
         self.assertContains(response, 'Прогулка по городу')
+        self.assertContains(response, 'Верх')
+        self.assertContains(response, 'Лето')
         self.assertNotContains(response, '>Walk<')
 
     def test_filter_by_category(self):

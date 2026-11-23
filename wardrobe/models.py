@@ -89,10 +89,27 @@ class UserOccasion(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class IdealLook(models.Model):
-    title = models.CharField(max_length=100, default='')
-    occasion = models.CharField(max_length=30, default='')
-    image = models.ImageField(upload_to='ideal_looks/', blank=True, null=True)
-    image_url = models.URLField(blank=True, null=True)
-    description = models.TextField(blank=True, default='')
+    """Пример идеального образа для повода: файл с компьютера или ссылка на картинку."""
+
+    occasion = models.CharField('Повод', max_length=30)
+    title = models.CharField('Название', max_length=100)
+    image = models.FileField('Файл картинки', upload_to='ideal_looks/', blank=True)
+    image_url = models.URLField('Или ссылка на картинку', max_length=500, blank=True)
+    description = models.CharField('Описание', max_length=255, blank=True)
+
+    class Meta:
+        db_table = 'ideal_looks'
+        ordering = ['occasion', 'id']
+        verbose_name = 'Идеальный образ'
+        verbose_name_plural = 'Идеальные образы'
+
+    @property
+    def src(self):
+        """Адрес картинки: загруженный файл, иначе ссылка."""
+        return self.image.url if self.image else self.image_url
+
+    def __str__(self):
+        return self.title
