@@ -10,7 +10,6 @@ class WardrobeItem(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wardrobe_items'
     )
     name = models.CharField('Название', max_length=100)
-    # ДОБАВЛЕНО ПОЛЕ ДЛЯ КАРТИНКИ:
     image = models.ImageField('Картинка', upload_to='wardrobe/', blank=True, null=True)
     category = models.CharField('Категория', max_length=20)
     color = models.ForeignKey('forecasts.Color', on_delete=models.PROTECT)
@@ -91,14 +90,13 @@ class UserOccasion(models.Model):
         return self.name
 
 
-
 class IdealLook(models.Model):
     """Модель идеального образа."""
-    title = models.CharField('Название', max_length=100)
-    description = models.TextField('Описание', blank=True, null=True)
-    image_url = models.URLField('Ссылка на картинку', blank=True, null=True)
+    title = models.CharField('Название', max_length=100, default='')
+    occasion = models.CharField('Повод', max_length=30, default='')
     image = models.ImageField('Картинка', upload_to='ideal_looks/', blank=True, null=True)
-    occasion = models.CharField('Повод', max_length=50, blank=True, null=True)
+    image_url = models.URLField('Ссылка на картинку', blank=True, null=True)
+    description = models.TextField('Описание', blank=True, null=True)
 
     def __str__(self):
         return self.title

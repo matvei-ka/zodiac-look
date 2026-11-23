@@ -6,6 +6,26 @@
 <div class="card shadow mx-auto mt-4" style="max-width: 560px;">
     <div class="card-body p-4">
         <h3 class="mb-4">{{ title }}</h3>
+<<<<<<< HEAD
+=======
+
+        {% if form.errors %}
+            <div class="alert alert-danger" style="color: red; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                <strong>Не удалось сохранить вещь. Проверьте поля:</strong>
+                <ul style="margin-bottom: 0;">
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li><b>{{ field.label }}:</b> {{ field.errors|striptags }}</li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if form.non_field_errors %}
+                        <li>{{ form.non_field_errors|striptags }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+
+>>>>>>> 84ecb50d6476a541d98eca13cda54b4970d407c5
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% for field in form %}
@@ -20,6 +40,7 @@
             <button type="submit" class="btn btn-success">Сохранить</button>
             <a href="{% url 'wardrobe:wardrobe_list' %}" class="btn btn-link">Отмена</a>
         </form>
+        
     </div>
 </div>
 {% endblock %}

@@ -8,13 +8,12 @@
 
     <form method="post" class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
         {% csrf_token %}
-        <select name="mood" class="form-select w-auto text-center" required>
+        <select name="mood" class="form-select w-auto text-center" required onchange="this.form.submit()">
             <option value="" disabled {% if not entry %}selected{% endif %}>Выбери настроение</option>
             {% for value, label in moods %}
             <option value="{{ value }}" {% if entry and entry.mood == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
         </select>
-        <button type="submit" class="btn btn-outline-dark px-4">Получить прогноз</button>
     </form>
 </div>
 

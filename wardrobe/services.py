@@ -48,4 +48,7 @@ def pick_outfit(user, occasion, mood_entry):
         reason_text = ", ".join(entry['reasons']) if entry['reasons'] else "подходит по категории"
         explanation.append(f"{entry['item'].name} ({reason_text})")
 
+    if not selected:
+        return None, 0, []
+    
     return selected, percentage, explanation
