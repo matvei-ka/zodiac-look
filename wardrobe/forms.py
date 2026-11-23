@@ -51,14 +51,8 @@ class ItemForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        
         if not cleaned_data.get('category'):
             raise forms.ValidationError("Выберите категорию одежды.")
         if not cleaned_data.get('season'):
             raise forms.ValidationError("Выберите сезон.")
-            
-        # Новая проверка на наличие картинки:
-        if not cleaned_data.get('image'):
-            raise forms.ValidationError("Пожалуйста, прикрепите изображение вещи.")
-            
         return cleaned_data

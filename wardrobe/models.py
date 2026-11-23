@@ -11,7 +11,7 @@ class WardrobeItem(models.Model):
     )
     name = models.CharField('Название', max_length=100)
     # ДОБАВЛЕНО ПОЛЕ ДЛЯ КАРТИНКИ:
-    image = models.ImageField('Картинка', upload_to='wardrobe/', blank=True, null=True)
+    image = models.ImageField('Картинка', upload_to='wardrobe/')
     category = models.CharField('Категория', max_length=20)
     color = models.ForeignKey('forecasts.Color', on_delete=models.PROTECT)
     season = models.CharField('Сезон', max_length=20)

@@ -38,7 +38,7 @@ def wardrobe_list(request):
 
 @login_required
 def item_add(request):
-    form = ItemForm(request.POST or None)
+    form = ItemForm(request.POST or None, request.FILES or None)
     if request.method == 'POST' and form.is_valid():
         item = form.save(commit=False)
         item.user = request.user
