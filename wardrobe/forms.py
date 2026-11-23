@@ -42,3 +42,23 @@ class ItemForm(forms.ModelForm):
         for field in self.fields.values():
             css = 'form-select' if isinstance(field.widget, forms.Select) else 'form-control'
             field.widget.attrs['class'] = css
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if not name or len(name.strip()) < 2:
+            raise forms.ValidationError("Название вещи должно быть не короче 2 символов и не может быть пустым.")
+        return name
+
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        if not cleaned_data.get('category'):
+            raise forms.ValidationError("Выберите категорию одежды.")
+        if not cleaned_data.get('season'):
+            raise forms.ValidationError("Выберите сезон.")
+            
+        # Новая проверка на наличие картинки:
+        if not cleaned_data.get('image'):
+            raise forms.ValidationError("Пожалуйста, прикрепите изображение вещи.")
+            
+        return cleaned_data

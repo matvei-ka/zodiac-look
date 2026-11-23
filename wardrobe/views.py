@@ -84,7 +84,7 @@ def stylist(request):
 
         selected, percentage, explanation = pick_outfit(request.user, occasion, entry)
         if not selected:
-            messages.warning(request, 'В гардеробе нет вещей для подбора. Добавь хотя бы одну.')
+            messages.warning(request, 'Ничего не подходит в таком случае. Рекомендуем добавить больше вещей в гардероб.')
             return redirect('wardrobe:wardrobe_list')
 
         # Несохранённые черновики прошлых подборов не копим

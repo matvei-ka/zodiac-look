@@ -89,3 +89,10 @@ class UserOccasion(models.Model):
 
     def __str__(self):
         return self.name
+    
+class IdealLook(models.Model):
+    title = models.CharField(max_length=100, default='')
+    occasion = models.CharField(max_length=30, default='')
+    image = models.ImageField(upload_to='ideal_looks/', blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True)
+    description = models.TextField(blank=True, default='')
