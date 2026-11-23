@@ -1,42 +1,91 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Астропрогноз{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    {% block extra_head %}{% endblock %}
+    
+    <style>
+        /* 1. ВАШ КРАСИВЫЙ ГРАДИЕНТ НА ФОНЕ */
+        body {
+            background: linear-gradient(135deg, #fffad5, #d1eaff, #ffd8e5) !important;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 2. СЛОЙ ДЛЯ ЗВЕЗД (прозрачный, поверх градиента) */
+        #stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 3. ЗВЕЗДЫ */
+        .star {
+            position: absolute;
+            background: #ffe600;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fae315, 0 0 20px #facc15;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.4); }
+            100% { opacity: 0.2; transform: scale(0.8); }
+        }
+
+        /* 4. КОНТЕНТ ВЫШЕ ЗВЕЗД */
+        .navbar, .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 5. КАРТОЧКИ БЕЛЫЕ, ЧТОБЫ ТЕКСТ БЫЛ ЧИТАЕМ */
+        .card, .bg-white { 
+            background-color: #ffffff !important; 
+        }
+    </style>
 </head>
-<body style="background: linear-gradient(135deg, #fffbe1, #ddefff, #ffeaf1); min-height: 100vh;">
+<body>
+    
+    <div id="stars-bg"></div>
 
     <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background-color: #6a046a;">
         <div class="container">
             <a class="navbar-brand" href="{% url 'core:home' %}" style="font-family: 'Playfair Display', serif; font-size: 1.6rem; letter-spacing: 1px;">🌟 Астропрогноз</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Меню">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
                 <div class="navbar-nav me-auto">
                     {% if user.is_authenticated %}
-                    <a class="nav-link {% if request.resolver_match.view_name == 'forecasts:forecast' %}active{% endif %}" href="{% url 'forecasts:forecast' %}">Сегодня</a>
-                    <a class="nav-link {% if request.resolver_match.view_name == 'wardrobe:wardrobe_list' %}active{% endif %}" href="{% url 'wardrobe:wardrobe_list' %}">Гардероб</a>
-                    <a class="nav-link {% if request.resolver_match.view_name == 'wardrobe:stylist' %}active{% endif %}" href="{% url 'wardrobe:stylist' %}">Стилист</a>
-                    <a class="nav-link {% if request.resolver_match.view_name == 'wardrobe:look_list' %}active{% endif %}" href="{% url 'wardrobe:look_list' %}">Образы</a>
-                    <a class="nav-link {% if request.resolver_match.view_name == 'forecasts:audit' %}active{% endif %}" href="{% url 'forecasts:audit' %}">Аудит</a>
+                        <a class="nav-link {% if request.resolver_match.view_name == 'forecasts:forecast' %}active{% endif %}" href="{% url 'forecasts:forecast' %}">Сегодня</a>
+                        <a class="nav-link {% if request.resolver_match.view_name == 'wardrobe:wardrobe_list' %}active{% endif %}" href="{% url 'wardrobe:wardrobe_list' %}">Гардероб</a>
+                        <a class="nav-link {% if request.resolver_match.view_name == 'wardrobe:stylist' %}active{% endif %}" href="{% url 'wardrobe:stylist' %}">Стилист</a>
+                        <a class="nav-link {% if request.resolver_match.view_name == 'wardrobe:look_list' %}active{% endif %}" href="{% url 'wardrobe:look_list' %}">Образы</a>
+                        <a class="nav-link {% if request.resolver_match.view_name == 'forecasts:audit' %}active{% endif %}" href="{% url 'forecasts:audit' %}">Аудит</a>
+                        <a class="nav-link {% if request.resolver_match.view_name == 'core:help' %}active{% endif %}" href="{% url 'core:help' %}">Справка</a>
                     {% endif %}
-                    <a class="nav-link {% if request.resolver_match.view_name == 'core:help' %}active{% endif %}" href="{% url 'core:help' %}">Справка</a>
                 </div>
                 <div class="navbar-nav align-items-lg-center">
                     {% if user.is_authenticated %}
-                    <span class="navbar-text me-3">{{ user.username }}</span>
-                    <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-outline-light">Выйти</button>
-                    </form>
+                        <span class="navbar-text me-3">{{ user.username }}</span>
+                        <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-light">Выйти</button>
+                        </form>
                     {% else %}
-                    <a class="nav-link" href="{% url 'accounts:login' %}">Войти</a>
-                    <a class="nav-link" href="{% url 'accounts:register' %}">Регистрация</a>
+                        <a class="nav-link" href="{% url 'accounts:login' %}">Войти</a>
+                        <a class="nav-link" href="{% url 'accounts:register' %}">Регистрация</a>
                     {% endif %}
                 </div>
             </div>
@@ -45,10 +94,10 @@
 
     <div class="container pb-5">
         {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
-        </div>
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
         {% endfor %}
 
         {% block content %}
@@ -56,5 +105,22 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const bg = document.getElementById('stars-bg');
+      if (bg) {
+          for (let i = 0; i < 80; i++) {
+              const star = document.createElement('div');
+              star.className = 'star';
+              star.style.left = Math.random() * 100 + '%';
+              star.style.top = Math.random() * 100 + '%';
+              const size = Math.random() * 4 + 2;
+              star.style.width = size + 'px';
+              star.style.height = size + 'px';
+              star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+              star.style.animationDelay = (Math.random() * 2) + 's';
+              bg.appendChild(star);
+          }
+      }
+    </script>
 </body>
 </html>

@@ -89,10 +89,15 @@ class UserOccasion(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class IdealLook(models.Model):
-    title = models.CharField(max_length=100, default='')
-    occasion = models.CharField(max_length=30, default='')
-    image = models.ImageField(upload_to='ideal_looks/', blank=True, null=True)
-    image_url = models.URLField(blank=True, null=True)
-    description = models.TextField(blank=True, default='')
+    """Модель идеального образа."""
+    title = models.CharField('Название', max_length=100, default='')
+    occasion = models.CharField('Повод', max_length=30, default='')
+    image = models.ImageField('Картинка', upload_to='ideal_looks/', blank=True, null=True)
+    image_url = models.URLField('Ссылка на картинку', blank=True, null=True)
+    description = models.TextField('Описание', blank=True, null=True)
+
+    def __str__(self):
+        return self.title

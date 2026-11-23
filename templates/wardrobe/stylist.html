@@ -3,28 +3,51 @@
 {% block title %}Стилист — Астропрогноз{% endblock %}
 
 {% block content %}
-<div class="mt-4 border border-dark p-4 bg-white">
-    <h4 class="mb-3">Умный стилист</h4>
-
+<div class="mt-4 border border-dark p-4 bg-white rounded shadow-sm">
+    <h4 class="mb-3" style="font-family: 'Playfair Display', serif;">Умный стилист</h4>
+    
     <p class="mb-4">
-        Цвет удачи на сегодня:
-        <span class="px-3 py-1 border border-dark fw-bold" style="background: {{ entry.color.hex_code }};">{{ entry.color.name }}</span>
+        Цвет удачи на сегодня: 
+        <span class="px-3 py-1 border border-dark fw-bold" style="background: {{ entry.color.hex_code }}; color: black;">
+            {{ entry.color.name }}
+        </span>
         <br>
         (настроение: {{ entry.get_mood_display }})
     </p>
 
+    <!-- Форма добавления своего повода -->
+    <div class="mb-4 p-3 bg-light rounded border">
+        <h6 class="mb-2">Добавить свой повод:</h6>
+        <form method="post" action="{% url 'wardrobe:add_occasion' %}" class="d-flex gap-2">
+            {% csrf_token %}
+            <input type="text" name="occasion_name" class="form-control" placeholder="Например: Поход в кино" required style="max-width: 300px;">
+            <button type="submit" class="btn btn-outline-success btn-sm">Сохранить</button>
+        </form>
+    </div>
+
+    <!-- Основная форма подбора образа -->
     <form method="post" class="d-flex align-items-center flex-wrap gap-2">
         {% csrf_token %}
-
         <label class="fw-bold me-2" for="occasion">Выбери повод:</label>
-        <select name="occasion" id="occasion" class="form-select w-auto me-2" onchange="this.form.submit()" required>
-            <option value="" disabled selected>Выбери повод</option>
-            {% for value, label in occasions %}
-                <option value="{{ value }}">{{ label }}</option>
-            {% endfor %}
+        <select name="occasion" id="occasion" class="form-select w-auto me-2" required>
+            <option value="walk">Прогулка по городу</option>
+            <option value="home">Уютный вечер дома</option>
+            <option value="work">Деловая встреча</option>
+            <option value="shopping">Шопинг и обновки</option>
+            <option value="productive">День продуктивности</option>
+            <option value="party">Выход в свет</option>
+            <option value="spontaneous">Спонтанная прогулка</option>
+            <option value="important">Важное событие</option>
+            
+            {% if user_occasions %}
+                <optgroup label="Мои поводы">
+                {% for occ in user_occasions %}
+                    <option value="custom_{{ occ.id }}">{{ occ.name }}</option>
+                {% endfor %}
+                </optgroup>
+            {% endif %}
         </select>
-
-        <!-- Кнопка удалена, так как форма отправляется при выборе -->
+        <button type="submit" class="btn btn-outline-dark">Подобрать образ</button>
     </form>
 </div>
 {% endblock %}

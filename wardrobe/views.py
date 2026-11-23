@@ -7,7 +7,7 @@ from forecasts.services import get_today_entry
 
 from .forms import CATEGORY_CHOICES, OCCASION_CHOICES, SEASON_CHOICES, ItemForm
 from .ideal import pick_ideal_looks
-from .models import Look, LookItem, WardrobeItem
+from .models import Look, LookItem, WardrobeItem, UserOccasion
 from .services import pick_outfit
 
 OCCASIONS = dict(OCCASION_CHOICES)
@@ -51,7 +51,7 @@ def item_add(request):
 @login_required
 def item_edit(request, pk):
     item = get_object_or_404(WardrobeItem, pk=pk, user=request.user)
-    form = ItemForm(request.POST or None, instance=item)
+    form = ItemForm(request.POST or None, request.FILES or None, instance=item)
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, 'Изменения сохранены.')
@@ -76,23 +76,39 @@ def stylist(request):
         messages.info(request, 'Сначала выбери настроение, чтобы узнать цвет удачи.')
         return redirect('forecasts:forecast')
 
+    # Достаем пользовательские поводы
+    user_occasions = UserOccasion.objects.filter(user=request.user)
+
     if request.method == 'POST':
         occasion = request.POST.get('occasion')
-        if occasion not in OCCASIONS:
+        
+        # Проверяем повод
+        if occasion in OCCASIONS:
+            occasion_display = OCCASIONS[occasion]
+        elif occasion and occasion.startswith('custom_'):
+            custom_id = occasion.split('_')[1]
+            custom_occ = UserOccasion.objects.filter(id=custom_id, user=request.user).first()
+            if custom_occ:
+                occasion_display = custom_occ.name
+            else:
+                messages.error(request, 'Выбери повод из списка.')
+                return redirect('wardrobe:stylist')
+        else:
             messages.error(request, 'Выбери повод из списка.')
             return redirect('wardrobe:stylist')
 
-        selected, percentage, explanation = pick_outfit(request.user, occasion, entry)
+        # Подбор образа (передаем само название, а не ключ, для сервиса)
+        selected, percentage, explanation = pick_outfit(request.user, occasion_display, entry)
         if not selected:
             messages.warning(request, 'Ничего не подходит в таком случае. Рекомендуем добавить больше вещей в гардероб.')
             return redirect('wardrobe:wardrobe_list')
 
-        # Несохранённые черновики прошлых подборов не копим
+       
         Look.objects.filter(user=request.user, is_saved=False).delete()
         look = Look.objects.create(
             user=request.user,
-            title=f'Образ: {OCCASIONS[occasion]}',
-            occasion=occasion,
+            title=f'Образ: {occasion_display}',
+            occasion=occasion_display,
             color=entry.color,
             score=percentage,
             is_saved=False,
@@ -106,12 +122,16 @@ def stylist(request):
             'look': look,
             'rows': selected,
             'percentage': percentage,
-            'occasion': OCCASIONS[occasion],
+            'occasion': occasion_display,
             'entry': entry,
-            'ideals': pick_ideal_looks(occasion),
+            'ideals': pick_ideal_looks(occasion_display),
         })
 
-    return render(request, 'wardrobe/stylist.html', {'entry': entry, 'occasions': OCCASION_CHOICES})
+    return render(request, 'wardrobe/stylist.html', {
+        'entry': entry, 
+        'occasions': OCCASION_CHOICES,
+        'user_occasions': user_occasions
+    })
 
 
 @login_required
@@ -131,7 +151,7 @@ def look_list(request):
     rows = [
         {
             'look': look,
-            'occasion': OCCASIONS.get(look.occasion, look.occasion),
+            'occasion': look.occasion,
             'items': ', '.join(item.name for item in look.items.all()),
         }
         for look in looks
@@ -146,3 +166,13 @@ def look_delete(request, pk):
     look.delete()
     messages.success(request, 'Образ удалён.')
     return redirect('wardrobe:look_list')
+
+
+@login_required
+def add_occasion(request):
+    if request.method == 'POST':
+        name = request.POST.get('occasion_name')
+        if name:
+            UserOccasion.objects.create(user=request.user, name=name)
+            messages.success(request, f'Повод "{name}" добавлен.')
+    return redirect('wardrobe:stylist')
